@@ -9,6 +9,8 @@
   ],
   "compilerOptions": {
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "types": ["reflect-metadata"],
     "baseUrl": ".",
     "paths" : {
       "*": [

@@ -1,3 +1,4 @@
+import { inject, injectable } from "inversify";
 import Events from "../../events";
 import {Order, OrderSide, OrderStatus, ReportType} from "../../types/order";
 import {Pair} from "../../types/pair";
@@ -7,13 +8,14 @@ import {SubWallet} from "./subWallet";
 /**
  * The wallet keeps track of all assets
  */
+@injectable()
 export default class Wallet {
 
     private readonly assets: SubWallet;
     private readonly reservedAssets: SubWallet;
 
-    constructor(assets: AssetMap) {
-        this.assets = new SubWallet(assets);
+    constructor(@inject("AssetMap") config: AssetMap) {
+        this.assets = new SubWallet(config);
         this.reservedAssets = new SubWallet({});
     }
 

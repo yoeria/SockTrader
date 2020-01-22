@@ -30,7 +30,7 @@ export default class BackTester extends SockTrader {
     constructor(inputCandles: InputCandle[]) {
         super();
         this.inputCandles = inputCandles;
-        this.exchange = new ExchangeFactory().createExchange();
+        this.exchange = new ExchangeFactory().createExchange("local");
     }
 
     async start(): Promise<void> {

@@ -1,3 +1,4 @@
+import {injectable} from "inversify";
 import moment, {Moment} from "moment";
 import OrderTracker from "../../order/orderTracker";
 import Wallet from "../../plugins/wallet/wallet";
@@ -7,6 +8,7 @@ import {OrderCreator} from "../../types/orderCreator";
 import {Pair} from "../../types/pair";
 import {generateOrderId} from "../../utils/utils";
 
+@injectable()
 export default class LocalOrderCreator implements OrderCreator {
 
     currentCandle?: Candle = undefined;

@@ -1,6 +1,8 @@
+import { injectable } from "inversify";
 import Events from "../events";
 import {Order, OrderStatus, ReportType} from "../types/order";
 
+@injectable()
 export default class OrderTracker {
 
     private readonly unconfirmedOrders: Record<string, boolean> = {};

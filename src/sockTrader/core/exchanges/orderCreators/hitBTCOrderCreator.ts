@@ -1,3 +1,4 @@
+import {inject, injectable} from "inversify";
 import OrderTracker from "../../order/orderTracker";
 import {Connection} from "../../types/connection";
 import {Order, OrderSide} from "../../types/order";
@@ -6,9 +7,14 @@ import {Pair} from "../../types/pair";
 import {generateOrderId} from "../../utils/utils";
 import HitBTCCommand from "../commands/hitBTCCommand";
 
+@injectable()
 export default class HitBTCOrderCreator implements OrderCreator {
 
-    constructor(private readonly orderTracker: OrderTracker, private readonly connection: Connection) {
+    constructor(
+        @inject(OrderTracker) private readonly orderTracker: OrderTracker,
+        private readonly connection: Connection,
+        // @inject("Connection") @targetName("WsConnection") private readonly connection: Connection,
+    ) {
     }
 
     cancelOrder(order: Order): Order | void {

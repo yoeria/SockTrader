@@ -1,5 +1,8 @@
+import {interfaces} from "inversify";
+import container from "../../../inversify.config";
 import OrderTrackerFactory from "../order/orderTrackerFactory";
 import WalletFactory from "../plugins/wallet/walletFactory";
+import {OrderCreator} from "../types/orderCreator";
 import {OrderFiller} from "../types/orderFiller";
 import BaseExchange from "./baseExchange";
 import {ExchangeDefinition, exchanges} from "./index";
@@ -11,17 +14,17 @@ import RemoteOrderFiller from "./orderFillers/remoteOrderFiller";
 
 export default class ExchangeFactory {
 
-    createExchange(exchangeName?: string): BaseExchange {
+    createExchange(exchangeName: string): BaseExchange {
         const def = this.getExchangeDefinition(exchangeName);
         const exchange = new def.class();
 
-        exchange.setOrderCreator(this.getOrderCreator(def));
+        exchange.setOrderCreator(this.getOrderCreator(exchangeName));
         exchange.setOrderFiller(this.getOrderFiller());
 
         return exchange;
     }
 
-    private getExchangeDefinition(exchangeName?: string): ExchangeDefinition {
+    private getExchangeDefinition(exchangeName: string): ExchangeDefinition {
         if (exchangeName) {
             const def: ExchangeDefinition = exchanges[exchangeName];
             if (!def) throw new Error(`Could not find exchange: ${exchangeName}`);
@@ -41,17 +44,16 @@ export default class ExchangeFactory {
      * In case of live trading, get order creator for given exchange
      * @param config
      */
-    private getOrderCreator(config: ExchangeDefinition) {
-        const isLive = process.env.SOCKTRADER_TRADING_MODE === "LIVE";
-
-        const orderCreator = new config.orderCreator();
-        return isLive ? orderCreator : new LocalOrderCreator(OrderTrackerFactory.getInstance(), WalletFactory.getInstance());
+    private getOrderCreator(exchangeName: string) {
+        const factory = container.get<interfaces.Factory<OrderCreator>>("Factory<OrderCreator>");
+        return factory(exchangeName) as OrderCreator;
     }
 
     private getOrderFiller(): OrderFiller {
         switch (process.env.SOCKTRADER_TRADING_MODE) {
             case "PAPER":
                 return new PaperTradingOrderFiller(OrderTrackerFactory.getInstance(), WalletFactory.getInstance());
+            // return container.get(PaperTradingOrderFiller);
             case "LIVE":
                 return new RemoteOrderFiller();
             case "BACKTEST":

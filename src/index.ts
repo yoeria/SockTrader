@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import "reflect-metadata";
 import "source-map-support/register";
 import yargs from "yargs";
 import Backtest from "./sockTrader/cli/backtest";
