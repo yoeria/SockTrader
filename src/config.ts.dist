@@ -19,7 +19,7 @@ export default {
             secretKey: "REPLACE_WITH_MY_SECRET_KEY",
         },
     },
-
+    transports: [],
     plugins: [
         new WalletLogger(),
         new OrderLogger(),

@@ -1,3 +1,4 @@
+// @ts-ignore
 import {AssetMap} from "../../plugins/wallet/wallet";
 
 export interface AssetAware {

@@ -1,4 +1,5 @@
 import winston, {format} from "winston";
+import config from "../../config";
 
 export class LoggerFactory {
 
@@ -35,10 +36,12 @@ export class LoggerFactory {
     }
 
     static createLogger(category: string): winston.Logger {
+        console.log(config);
         return winston.loggers.add(category, {
             format: this.logFormat,
             exitOnError: false,
             transports: [
+                ...config.transports,
                 new winston.transports.Console({silent: LoggerFactory.IS_TEST}),
                 new winston.transports.File({filename: `./src/logs/${category}.log`, silent: LoggerFactory.IS_TEST}),
             ],

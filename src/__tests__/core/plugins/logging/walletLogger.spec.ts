@@ -1,5 +1,6 @@
 import {walletLogger} from "../../../../sockTrader/core/loggerFactory";
 import WalletLogger from "../../../../sockTrader/core/plugins/logging/walletLogger";
+// @ts-ignore
 import {AssetMap} from "../../../../sockTrader/core/plugins/wallet/wallet";
 
 jest.mock("../../../../sockTrader/core/loggerFactory");

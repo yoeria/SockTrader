@@ -134,7 +134,30 @@ export default new CandleNormalizer("coinbase_btcusd_1h.csv", candleMeta, parser
 
 ## Your own strategy?
 Take a look at the given example strategy in this repository: [simpleMovingAverage strategy](src/strategies/simpleMovingAverage.ts)
- 
+
+## Log your trades to your external system of choice
+By default Socktrader will output it's logging to console and file see: `loggerFactory.ts`. You can extend this by adding additional
+transport into `config.ts`. 
+
+## Adding Kafka as external transport
+For instance you can add a topic in Kafka and connect this to Socktrader. We used [winston3-kafka](https://github.com/aidtechnology/winston3-kafka) to actually handle the forwarding
+of messages to Kafka
+```
+// @ts-ignore
+import KafkaTransport from "winston3-kafka";
+...
+ transports: [
+    new KafkaTransport({
+        topic: "logs",
+        clientOptions: {
+            kafkaHost: "localhost:9092",
+        },
+    }),
+    ]
+```
+
+We assume you have a running Kafka broker on port 9092 with a topic named "logs". To monitor incoming messages and create the "logs" topic, you can use
+a tool like [Conduktor](https://www.conduktor.io/). For setting up Kafka we used the following docker guide: [Kafka using Docker](https://itnext.io/how-to-install-kafka-using-docker-a2b7c746cbdc).
 
 ## We need your help!
 We're looking for extra contributors to give this project a well deserved boost.

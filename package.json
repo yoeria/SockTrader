@@ -103,6 +103,7 @@
     "technicalindicators": "^3.0.0",
     "typescript": "^3.7.5",
     "winston": "^3.2.1",
+    "winston3-kafka": "git+https://github.com/aidtechnology/winston3-kafka.git",
     "ws": "^7.2.1",
     "yargs": "^15.1.0"
   },
