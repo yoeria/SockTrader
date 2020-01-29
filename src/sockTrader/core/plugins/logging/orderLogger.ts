@@ -1,11 +1,16 @@
+import winston = require("winston");
 import {orderLogger} from "../../loggerFactory";
 import {Order} from "../../types/order";
 import {ReportAware} from "../../types/plugins/reportAware";
 
 export default class OrderLogger implements ReportAware {
+    private orderLogger!: winston.Logger;
 
-    onReport(order: Order) {
-        orderLogger.info({type: "Order", payload: order});
+    constructor() {
+        import("../../loggerFactory").then(({walletLogger}) => this.orderLogger = orderLogger);
     }
 
+    onReport(order: Order) {
+        this.orderLogger.info({type: "Order", payload: order});
+    }
 }
