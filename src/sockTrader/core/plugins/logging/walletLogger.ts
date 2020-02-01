@@ -1,7 +1,6 @@
-import winston = require("winston");
+import winston from "winston";
 import {AssetAware} from "../../types/plugins/assetAware";
-// @ts-ignore
-import {AssetMap} from "../wallet/wallet";
+import {AssetMap} from "../../types/wallet";
 
 export default class WalletLogger implements AssetAware {
     private walletLogger!: winston.Logger;
