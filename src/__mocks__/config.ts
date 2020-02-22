@@ -17,6 +17,8 @@ module.exports = {
         hitbtc: {
             publicKey: "pub_key",
             secretKey: "sec_key",
+            makerFee:2,
+            takerFee:2,
         },
     },
 
