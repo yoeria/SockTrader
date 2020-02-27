@@ -9,6 +9,7 @@ import LocalOrderCreator from "./orderCreators/localOrderCreator";
 import LocalOrderFiller from "./orderFillers/localOrderFiller";
 import Events from "../events";
 import {BotStatus} from "../types/botStatus";
+import config from "../../../config";
 
 /**
  * The LocalExchange resembles a local dummy marketplace for
@@ -28,32 +29,38 @@ export default class LocalExchange extends BaseExchange {
         return undefined;
     }
 
-    private createGrowingCandleList(candles: Candle[]) {
+    private* generateGrowingCandleList(candles: Candle[]) {
         let intermediateCandles: Candle[] = [];
 
-        return candles.map((candle, index, array) => {
-            intermediateCandles = [candle, ...intermediateCandles];
-            return intermediateCandles;
-        });
-    }
+        for (let i = 0; i < candles.length; i += 1) {
+            const maxLength = (config.retentionPeriod > 0 && intermediateCandles.length >= config.retentionPeriod)
+                ? config.retentionPeriod - 1
+                : undefined;
 
-    private createChunks(list: any[], chunkSize: number) {
-        const chunkedList: any[][] = [];
-        for (let i = 0, j = list.length; i < j; i += chunkSize) {
-            chunkedList.push(list.slice(i, i + chunkSize));
+            intermediateCandles = [candles[i], ...intermediateCandles.slice(0, maxLength)];
+
+            yield intermediateCandles;
         }
-
-        return chunkedList;
     }
 
-    protected prepareCandleChunks(candles: Candle[]): Candle[][][] {
-        const growingCandles = this.createGrowingCandleList(candles);
+    protected* generateCandleChunks(candles: Candle[]) {
+        let i = 1;
 
-        return this.createChunks(growingCandles, this.chunkSize);
+        let currentChunk = [];
+        for (const candleList of this.generateGrowingCandleList(candles)) {
+            currentChunk.push(candleList);
+
+            if (i % this.chunkSize === 0) {
+                yield currentChunk;
+                currentChunk = [];
+            }
+
+            i += 1;
+        }
     }
 
     protected processChunk(chunk: Candle[][], pair: Pair) {
-        chunk.forEach(candleList => {
+        chunk.forEach((candleList) => {
             (this.orderCreator as LocalOrderCreator).setCurrentCandle(candleList[0]);
             (this.orderFiller as LocalOrderFiller).onProcessCandles(candleList);
             Events.emit("core.updateCandles", candleList, pair);
@@ -73,21 +80,24 @@ export default class LocalExchange extends BaseExchange {
      * Candles should be ordered during normalization process.
      */
     async emitCandles(candles: Candle[], pair: Pair) {
-        const candleChunks = this.prepareCandleChunks(candles);
-        Events.emit("core.botStatus", {type: "started", chunks: candleChunks.length});
+        const chunks = 182; // @TODO total length?
+
+        Events.emit("core.botStatus", {type: "started", chunks: chunks});
 
         return new Promise((resolve, reject) => {
-            candleChunks.forEach((chunk, index) => {
-                setImmediate(() => {
-                    this.reportProgress(index, candleChunks.length);
-                    this.processChunk(chunk, pair);
 
-                    if (index === (candleChunks.length - 1)) {
-                        Events.emit("core.botStatus", {type: "finished"});
-                        resolve(true);
-                    }
-                });
-            });
+            let index = 0;
+            for (const chunk of this.generateCandleChunks(candles)) {
+                this.reportProgress(index, chunks);
+                this.processChunk(chunk, pair);
+
+                index += 1;
+
+                if (index === (chunks - 1)) {
+                    Events.emit("core.botStatus", {type: "finished"});
+                    resolve(true);
+                }
+            }
         });
     }
 

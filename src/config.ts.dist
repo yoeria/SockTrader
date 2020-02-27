@@ -4,6 +4,8 @@
 // import ProfitCalculator from "./sockTrader/core/plugins/order/profitCalculator";
 
 export default {
+    retentionPeriod: 0,
+
     timezone: "Europe/Brussels",
 
     webServer: {
