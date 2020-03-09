@@ -8,25 +8,33 @@ import LocalOrderCreator from "./orderCreators/localOrderCreator";
 import LocalOrderFiller from "./orderFillers/localOrderFiller";
 import PaperTradingOrderFiller from "./orderFillers/paperTradingOrderFiller";
 import RemoteOrderFiller from "./orderFillers/remoteOrderFiller";
+import {FeeConfig} from "../types/feeConfig";
 
 export default class ExchangeFactory {
 
     createExchange(exchangeName: string): BaseExchange {
         const def = this.getExchangeDefinition(exchangeName);
 
-        const exchange = new def.class();
-        const wallet = new Wallet(config.assets);
+        const feeConfig = this.getWalletFeeConfig(exchangeName);
+        const wallet = new Wallet(config.assets, feeConfig);
         const orderTracker = new OrderTracker();
 
         const orderCreator = this.getOrderCreator(def, wallet, orderTracker);
         const orderFiller = this.getOrderFiller(wallet, orderTracker);
 
+        const exchange = new def.class();
         exchange.setOrderCreator(orderCreator);
         exchange.setOrderFiller(orderFiller);
         exchange.setOrderTracker(orderTracker);
         exchange.setWallet(wallet);
 
         return exchange;
+    }
+
+    private getWalletFeeConfig(exchangeName: string): FeeConfig {
+        const exchangeConfig = (config.exchanges as any)[exchangeName];
+        if (!exchangeConfig) throw new Error(`Could not find exchange: ${exchangeName}`);
+        return exchangeConfig.wallet;
     }
 
     private getExchangeDefinition(exchangeName: string): ExchangeDefinition {

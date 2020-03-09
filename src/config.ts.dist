@@ -13,11 +13,15 @@ export default {
     assets: {
         USD: 10000,
     },
-
+    slippage: 0.1,
     exchanges: {
         hitbtc: {
             publicKey: "REPLACE_WITH_MY_PUBLIC_KEY",
             secretKey: "REPLACE_WITH_MY_SECRET_KEY",
+            wallet: {
+                makerFee:0,
+                takerFee:0,
+            },
         },
     },
 

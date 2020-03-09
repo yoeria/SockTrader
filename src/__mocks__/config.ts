@@ -12,13 +12,15 @@ module.exports = {
     assets: {
         USD: 100000,
     },
-
+    slippage: 0.1,
     exchanges: {
         hitbtc: {
             publicKey: "pub_key",
             secretKey: "sec_key",
-            makerFee:2,
-            takerFee:2,
+            wallet: {
+                makerFee: 2,
+                takerFee: 2,
+            },
         },
     },
 
