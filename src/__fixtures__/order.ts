@@ -43,6 +43,20 @@ export const FX_NEW_BUY_ORDER: Order = {
     quantity: 1,
 };
 
+export const FX_NEW_BUY_MARKET_ORDER: Order = {
+    createdAt: moment().subtract(5, "minutes"),
+    side: OrderSide.BUY,
+    status: OrderStatus.NEW,
+    timeInForce: OrderTimeInForce.GOOD_TILL_CANCEL,
+    type: OrderType.MARKET,
+    updatedAt: moment(),
+    reportType: ReportType.NEW,
+    id: "NEW_BUY_ORDER_1",
+    pair: ["BTC", "USD"],
+    price: 100,
+    quantity: 1,
+};
+
 export const FX_REPLACED_BUY_ORDER: Order = {
     createdAt: moment().subtract(5, "minutes"),
     side: OrderSide.BUY,

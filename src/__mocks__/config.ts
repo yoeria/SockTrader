@@ -12,7 +12,7 @@ module.exports = {
     assets: {
         USD: 100000,
     },
-    slippage: 0.1,
+    slippage: 1,
     exchanges: {
         hitbtc: {
             publicKey: "pub_key",
