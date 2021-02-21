@@ -17,8 +17,7 @@ create table candles
     low           double precision,
     close         double precision,
     volume        numeric,
-    quote_volume  numeric,
-    volume_active numeric
+    quote_volume  numeric
 );
 
 create unique index candles_id_uindex

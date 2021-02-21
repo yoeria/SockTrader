@@ -1,8 +1,14 @@
-import {DepthEvent, KlineEvent, OrderCancelResponse, OrderResponse, ReportEvent, WSResponseEvent} from "../binance/binanceInterfaces";
+import {
+    BinanceEventType,
+    BinanceReportEvent, BinanceCandleEvent,
+    DepthEvent,
+    OrderCancelResponse,
+} from "../exchanges/binance/binanceInterfaces";
+import {OrderResponse} from "../exchanges/exchangeInterfaces";
 
-export const mapKlineEvent = (event: any): KlineEvent => {
+export const mapKlineEvent = (event: any): BinanceCandleEvent => {
     return {
-        event: WSResponseEvent.kline,
+        eventType: BinanceEventType.kline,
         stream: event.stream,
         eventTime: new Date(event.data.eventTime),
         candleStart: new Date(event.data.kline.startTime),
@@ -24,7 +30,7 @@ export const mapKlineEvent = (event: any): KlineEvent => {
 
 export const mapDepthEvent = (event: any): DepthEvent => {
     return {
-        event: WSResponseEvent.depthUpdate,
+        eventType: BinanceEventType.depthUpdate,
         stream: event.stream,
         eventTime: new Date(event.data.eventTime),
         symbol: event.data.symbol,
@@ -68,7 +74,7 @@ export const mapOrderResponse = (event: any): OrderResponse => {
     }
 }
 
-export const mapReportEvent = (event: any): ReportEvent => {
+export const mapReportEvent = (event: any): BinanceReportEvent => {
     return {
         eventType: event.eventType,
         eventTime: new Date(event.eventTime),

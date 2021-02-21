@@ -1,8 +1,7 @@
-import {KlineEvent, WSResponseEvent} from "../binance/binanceInterfaces";
+import {LocalCandleEvent} from "../exchanges/local/localInterfaces";
 
-export const mapKlineEvent = (event: any): KlineEvent => {
+export const mapCandleEvent = (event: any): LocalCandleEvent => {
     return {
-        event: WSResponseEvent.kline,
         stream: event.stream,
         eventTime: event.close_time,
         candleStart: event.open_time,
@@ -16,8 +15,5 @@ export const mapKlineEvent = (event: any): KlineEvent => {
         volume: event.volume,
         final: true,
         quoteVolume: event.quote_volume,
-        volumeActive: event.volume_active,
-        quoteVolumeActive: 0,
-        ignored: '0',
-    }
-}
+    };
+};

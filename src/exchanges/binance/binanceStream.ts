@@ -1,11 +1,14 @@
 import {Observable} from "rxjs";
 import {BinanceWS} from "binance";
 import {filter, share} from "rxjs/operators";
-import BinanceRest from "./binanceRest";
-import {mapDepthEvent, mapKlineEvent, mapReportEvent} from "../mappers/binanceMapper";
-import {KlineEvent, MultiplexedStream, StreamConfig, WSKline, WSRequestEvent, WSResponseEvent} from "./binanceInterfaces";
+import {mapDepthEvent, mapKlineEvent, mapReportEvent} from "../../mappers/binanceMapper";
+import {Binance, BinanceCandleEvent, BinanceEventType, MultiplexedStream} from "./binanceInterfaces";
+import {CandleStreamConfig, DataStream, StreamConfig, StreamEvent} from "../exchangeInterfaces";
+import ExchangeInstance, {BinanceRest} from "./binanceRest";
 
-export default class BinanceStream {
+export default class BinanceStream implements DataStream<Binance> {
+
+    readonly binanceRest: BinanceRest = ExchangeInstance;
 
     private readonly ws = new BinanceWS(true);
 
@@ -29,57 +32,56 @@ export default class BinanceStream {
     /**
      * Observable that emits realtime candles as they come in from the Binance server
      */
-    readonly realtimeKlineStream$ = this.multiplexedStream$.pipe(
-        filter((data: MultiplexedStream): data is KlineEvent => data.event === WSResponseEvent.kline)
+    readonly realtimeCandleStream$ = this.multiplexedStream$.pipe(
+        filter((data: MultiplexedStream): data is BinanceCandleEvent => data.eventType === BinanceEventType.kline),
     );
 
     /**
      * Observable that emits candles only when it's time to start a new one. Meaning that a new candle will
      * be started immediately after the one that has been emitted.
      */
-    readonly klineStream$ = this.realtimeKlineStream$.pipe(
-        filter((data: KlineEvent) => data.final === true)
+    readonly candleStream$ = this.realtimeCandleStream$.pipe(
+        filter((data: BinanceCandleEvent) => data.final === true),
     );
 
     readonly userStream$ = new Observable(subscriber => {
         this.ws.onUserData(
             this.binanceRest._exchange,
             streamEvent => {
-                const result = this.mapUserEvent(streamEvent)
+                const result = this.mapUserEvent(streamEvent);
                 if (result) subscriber.next(result);
-            }
+            },
         );
     });
 
     constructor(
-        private config: StreamConfig,
-        private binanceRest: BinanceRest
+        private config: StreamConfig<Binance>,
     ) {
         this.createStreams(this.config);
     }
 
-    private createStreams(config: StreamConfig) {
+    private createStreams(config: StreamConfig<Binance>) {
         this.streams = config.map(value => {
             switch (value.event) {
-                case WSRequestEvent.depth:
+                case StreamEvent.depth:
                     return this.ws.streams.depth(value.ticker, value.level);
-                case WSRequestEvent.trades:
+                case StreamEvent.trades:
                     return this.ws.streams.trade(value.ticker);
-                case WSRequestEvent.ticker:
+                case StreamEvent.ticker:
                     return this.ws.streams.ticker(value.ticker);
-                case WSRequestEvent.kline:
-                    return this.ws.streams.kline(value.ticker, (<WSKline>value).interval);
+                case StreamEvent.kline:
+                    return this.ws.streams.kline(value.ticker, (<CandleStreamConfig<Binance>>value).interval);
                 default:
-                    throw new Error(`Unknown event: ${JSON.stringify(value)}`)
+                    throw new Error(`Unknown event: ${JSON.stringify(value)}`);
             }
-        })
+        });
     }
 
     private mapStream(stream: any) {
         switch (stream.data.eventType) {
-            case 'kline':
+            case "kline":
                 return mapKlineEvent(stream);
-            case 'depthUpdate':
+            case "depthUpdate":
                 return mapDepthEvent(stream);
             default:
                 throw new Error(`Given event type "${stream.data.eventType}" has no associated mapper`);
@@ -87,8 +89,8 @@ export default class BinanceStream {
     }
 
     private mapUserEvent(stream: any) {
-        switch(stream.eventType) {
-            case 'executionReport':
+        switch (stream.eventType) {
+            case "executionReport":
                 return mapReportEvent(stream);
             default:
                 console.warn(`Unmapped user event: ${stream.eventType}`);

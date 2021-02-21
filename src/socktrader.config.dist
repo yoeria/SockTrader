@@ -1,0 +1,25 @@
+export const config = {
+    database: {
+        host: '',
+        database: '',
+        port: 5432,
+        username: '',
+        password: '',
+    },
+    sentry: {
+        dsn: "https://REPLACE_ME.ingest.sentry.io/EXAMPLE ",
+        tracesSampleRate: 1.0
+    },
+    exchanges: {
+        binance: {
+            key: '_MY_API_KEY_',
+            secret: '_MY_SECRET_API_KEY_',
+            timeout: 15000,
+            recvWindow: 10000,
+            handleDrift: false,
+            baseUrl: 'https://api.binance.com/',
+        }
+    }
+
+}
+

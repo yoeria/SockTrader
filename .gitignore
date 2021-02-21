@@ -1,33 +1,13 @@
 # App configuration
-src/config.ts
+src/socktrader.config.ts
 
-# Custom user strategies
-src/strategies/*
-!src/strategies/.gitkeep
-!src/strategies/simpleMovingAverage.ts
-!src/strategies/empty.ts
-
-# Logs produced by the user & framework
-src/logs/*
-!src/logs/.gitkeep
-
-# Data folder to store
-src/data/*
-!src/data/.gitkeep
-!src/data/coinbase_btcusd_1h.csv
-!src/data/coinbase_btcusd_1h.ts
-
-# User-specific stuff
+# idea config files
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
-
-# Generated files
 .idea/**/contentModel.xml
-
-# Sensitive or high-churn files
 .idea/**/dataSources/
 .idea/**/dataSources.ids
 .idea/**/dataSources.local.xml
