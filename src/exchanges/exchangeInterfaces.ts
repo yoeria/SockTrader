@@ -108,7 +108,11 @@ export type StreamConfig<E extends ExchangeOptions> = Array<CandleStreamConfig<E
 export interface OrderHandler {
     createOrder(order: OrderRequest): Promise<void>;
 
+    createMarginOrder(order: OrderRequest): Promise<void>;
+
     cancelOrder(order: OrderCancelRequest): Promise<void>;
+
+    cancelMarginOrder(order: OrderCancelRequest): Promise<void>;
 
     readonly orderReport$: Observable<OrderReportEvent>;
 }

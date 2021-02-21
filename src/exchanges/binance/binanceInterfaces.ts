@@ -42,7 +42,6 @@ export interface BinanceReportEvent extends OrderReportEvent {
 
 export interface BinanceCandleEvent extends CandleEvent<Binance> {
     eventType: BinanceEventType;
-    volumeActive: number;
-    quoteVolumeActive: number;
-    ignored: "0" | "1";
+    takerVolume: number;
+    takerVolumeQuote: number;
 }

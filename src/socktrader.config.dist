@@ -14,10 +14,15 @@ export const config = {
         binance: {
             key: '_MY_API_KEY_',
             secret: '_MY_SECRET_API_KEY_',
-            timeout: 15000,
-            recvWindow: 10000,
-            handleDrift: false,
-            baseUrl: 'https://api.binance.com/',
+            recvWindow: 5000,
+            useServerTime: false,
+            reconnect: true,
+            keepAlive: true,
+            verbose: false,
+            test: false,
+            hedgeMode: false,
+            localAddress: false,
+            family: false,
         }
     }
 

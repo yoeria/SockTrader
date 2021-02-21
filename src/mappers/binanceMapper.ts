@@ -1,32 +1,48 @@
 import {
+    BinanceCandleEvent,
     BinanceEventType,
-    BinanceReportEvent, BinanceCandleEvent,
+    BinanceReportEvent,
     DepthEvent,
     OrderCancelResponse,
 } from "../exchanges/binance/binanceInterfaces";
 import {OrderResponse} from "../exchanges/exchangeInterfaces";
 
-export const mapKlineEvent = (event: any): BinanceCandleEvent => {
+export const mapKlineEvent = (candlesticks: any): BinanceCandleEvent => {
+    let {E: eventTime, s: symbol, k: ticks} = candlesticks;
+    let {
+        o: open,
+        h: high,
+        l: low,
+        c: close,
+        v: volume,
+        t: startTime,
+        T: endTime,
+        i: interval,
+        x: isFinal,
+        q: quoteVolume,
+        V: takerVolume,
+        Q: takerVolumeQuote,
+    } = ticks;
+
     return {
         eventType: BinanceEventType.kline,
-        stream: event.stream,
-        eventTime: new Date(event.data.eventTime),
-        candleStart: new Date(event.data.kline.startTime),
-        candleEnd: new Date(event.data.kline.endTime),
-        symbol: event.data.symbol,
-        interval: event.data.kline.interval,
-        open: parseFloat(event.data.kline.open),
-        high: parseFloat(event.data.kline.high),
-        low: parseFloat(event.data.kline.low),
-        close: parseFloat(event.data.kline.close),
-        volume: parseFloat(event.data.kline.volume),
-        final: event.data.kline.final,
-        quoteVolume: parseFloat(event.data.kline.quoteVolume),
-        volumeActive: parseFloat(event.data.kline.volumeActive),
-        quoteVolumeActive: parseFloat(event.data.kline.quoteVolumeActive),
-        ignored: event.data.kline.ignored, // @TODO log to sentry if this happens!?
-    }
-}
+        stream: `${symbol.toString().toLowerCase()}@kline_${interval}`,
+        eventTime: new Date(eventTime),
+        candleStart: new Date(startTime),
+        candleEnd: new Date(endTime),
+        symbol: symbol,
+        interval: interval,
+        open: parseFloat(open),
+        high: parseFloat(high),
+        low: parseFloat(low),
+        close: parseFloat(close),
+        volume: parseFloat(volume),
+        final: isFinal,
+        quoteVolume: parseFloat(quoteVolume),
+        takerVolume: parseFloat(takerVolume),
+        takerVolumeQuote: parseFloat(takerVolumeQuote),
+    };
+};
 
 export const mapDepthEvent = (event: any): DepthEvent => {
     return {
@@ -35,9 +51,9 @@ export const mapDepthEvent = (event: any): DepthEvent => {
         eventTime: new Date(event.data.eventTime),
         symbol: event.data.symbol,
         bidDepthDelta: event.data.bidDepthDelta,
-        askDepthDelta: event.data.askDepthDelta
-    }
-}
+        askDepthDelta: event.data.askDepthDelta,
+    };
+};
 
 export const mapOrderCancelResponse = (event: any): OrderCancelResponse => {
     return {
@@ -53,8 +69,8 @@ export const mapOrderCancelResponse = (event: any): OrderCancelResponse => {
         status: event.status,
         type: event.type,
         side: event.side,
-    }
-}
+    };
+};
 
 export const mapOrderResponse = (event: any): OrderResponse => {
     return {
@@ -71,8 +87,8 @@ export const mapOrderResponse = (event: any): OrderResponse => {
         timeInForce: event.timeInForce,
         type: event.type,
         side: event.side,
-    }
-}
+    };
+};
 
 export const mapReportEvent = (event: any): BinanceReportEvent => {
     return {
@@ -100,5 +116,5 @@ export const mapReportEvent = (event: any): BinanceReportEvent => {
         commissionAsset: event.commissionAsset,
         tradeTime: new Date(event.tradeTime),
         tradeId: event.tradeId,
-    }
-}
+    };
+};

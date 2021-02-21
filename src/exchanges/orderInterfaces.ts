@@ -49,6 +49,7 @@ export interface OrderRequest {
     timeInForce: TimeInForce;
     quantity?: number;
     quoteOrderQty?: number;
+    newClientOrderId?: string;
     price?: number;
 }
 
