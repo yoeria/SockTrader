@@ -15,13 +15,13 @@
   "scripts": {
     "stryker": "stryker run",
     "test": "jest  --ci --maxWorkers=2 --coverage",
-    "backtest": "npm run build && node ./build/index.js backtest",
-    "normalize": "npm run build && node ./build/index.js normalize",
-    "web-dev": "cross-env NODE_ENV=dev nodemon -e ts --exec \"npm run build && node ./build/index.js web\"",
-    "web": "npm run build && concurrently -c \"bgBlue.bold,bgBlack.bold\" -n webserver,compiler \"node ./build/index.js web\" \"tsc -w\"",
+    "backtest": "yarn build && node ./build/index.js backtest",
+    "normalize": "yarn build && node ./build/index.js normalize",
+    "web-dev": "cross-env NODE_ENV=dev nodemon -e ts --exec \"yarn build && node ./build/index.js web\"",
+    "web": "yarn build && concurrently -c \"bgBlue.bold,bgBlack.bold\" -n webserver,compiler \"node ./build/index.js web\" \"tsc -w\"",
     "build": "tsc",
     "lint": "eslint --fix \"src/**/*.ts\"",
-    "socktrader": "npm run build && node ./build/index.js",
+    "socktrader": "yarn build && node ./build/index.js",
     "pre-commit": "echo 'Pre-commit checks..' && exit 0"
   },
   "jest-junit": {
